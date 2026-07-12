@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pejabat Detektif Syariah: Fail Meja Penyiasatan Kes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=Special+Elite&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, collection, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        window.db = db;
+        window.auth = auth;
+        window.appId = appId;
+        window.collection = collection;
+        window.doc = doc;
+        window.setDoc = setDoc;
+        window.onSnapshot = onSnapshot;
+        window.getDocs = getDocs;
+
+        const initAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Ralat log masuk pangkalan data awan:", error);
+            }
+        };
+
+        initAuth();
+
+        onAuthStateChanged(auth, (user) => {
+            if (user && typeof window.dengarLeaderboardFirestore === 'function') {
+                window.dengarLeaderboardFirestore();
+            }
+        });
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #0f0c08 url('https://www.transparenttextures.com/patterns/dark-wood.png');
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        .typewriter-font { font-family: 'Special Elite', monospace; }
+        .courier-font { font-family: 'Courier Prime', monospace; }
+
+        .desk-surface {
+            background: linear-gradient(145deg, #1f150d, #120b06);
+            border: 4px solid #2d1e13;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+
+        .manila-folder-3d {
+            background: #e3cc9a;
+            color: #261a0f;
+            border-left: 8px solid #bfa570;
+            box-shadow: 8px 8px 0px #0c0805, 0 15px 25px rgba(0,0,0,0.5);
+            transform: rotate(-0.5deg);
+            position: relative;
+        }
+        .manila-folder-3d::before {
+            content: '';
+            position: absolute;
+            top: -12px; left: 20px;
+            width: 80px; height: 12px;
+            background: #e3cc9a;
+            border-radius: 4px 4px 0 0;
+        }
+
+        .crt-terminal {
+            background: #070c08;
+            border: 12px solid #3a3f44;
+            border-bottom-width: 20px;
+            box-shadow: inset 0 0 30px rgba(0, 255, 68, 0.2), 0 20px 30px rgba(0,0,0,0.7);
+            position: relative;
+            overflow: hidden;
+        }
+        .crt-terminal::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 255, 0, 0.06));
+            z-index: 2;
+            background-size: 100% 3px, 6px 100%;
+            pointer-events: none;
+        }
+
+        .desk-drawer {
+            background: #1c130b;
+            border: 2px solid #362415;
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.8);
+        }
+
+        .star-rating i { transition: transform 0.1s ease; }
+        .star-rating i:hover { transform: scale(1.3); }
+    </style>
+</head>
+<body class="min-h-screen text-stone-200 flex flex-col justify-between p-3 md:p-6" ontouchstart="">
+
+    <header class="w-full max-w-6xl mx-auto text-center py-4 z-10 relative">
+        <div class="inline-flex items-center gap-2 bg-amber-950/70 px-4 py-1.5 rounded-full border border-amber-600/40 mb-2 shadow-lg">
+            <span class="animate-pulse text-amber-500">🕵️‍♂️</span>
+            <span class="text-[11px] font-black tracking-widest text-amber-400 uppercase typewriter-font">Peringkat SPM (Tingkatan 5): KBAT RAWAKAN FAIL</span>
+        </div>
+        <h1 class="text-3xl md:text-5xl font-black tracking-tight text-amber-100 typewriter-font uppercase drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">
+            Misi Siasatan : Talak & Fasakh
+        </h1>
+    </header>
+
+    <!-- KOTAK MODAL NOTA -->
+    <div id="custom-modal" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 hidden backdrop-blur-md">
+        <div class="bg-stone-900 border-4 border-amber-800 p-6 rounded-none max-w-md w-full text-center shadow-2xl relative typewriter-font">
+            <div id="modal-icon" class="text-5xl mb-3">📜</div>
+            <h3 id="modal-title" class="text-xl font-bold text-amber-500 mb-2 uppercase border-b-2 border-amber-950 pb-2">Taklimat Kes</h3>
+            <p id="modal-msg" class="text-stone-300 text-xs md:text-sm mb-6 leading-relaxed text-left font-mono bg-black/40 p-3 border border-stone-800"></p>
+            <div class="flex gap-3 justify-center">
+                <button id="modal-btn-primary" class="w-full py-3 bg-amber-600 hover:bg-amber-700 text-stone-950 font-black transition duration-200 uppercase text-xs tracking-wider shadow-md">
+                    Buka Dokumen
+                </button>
+                <button id="modal-btn-secondary" onclick="tutupModal(); tapFX('click');" class="w-full py-3 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold transition duration-200 uppercase text-xs tracking-wider hidden">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RUJUKAN DIARI UNDANG-UNDANG -->
+    <div id="wallet-modal" class="fixed inset-0 bg-black/90 z-40 flex items-center justify-center p-4 hidden">
+        <div class="manila-folder-3d p-6 rounded-none max-w-lg w-full shadow-2xl relative max-h-[85vh] overflow-y-auto courier-font border-2 border-amber-950">
+            <button onclick="tutupDompet(); tapFX('click');" class="absolute top-2 right-4 text-stone-900 text-3xl font-bold p-2">&times;</button>
+            <div class="flex items-center gap-3 mb-4 border-b-2 border-stone-800/30 pb-2">
+                <span class="text-3xl">📖</span>
+                <h3 class="text-xl font-bold uppercase text-stone-900">Buku Rujukan Fail Meja Syariah</h3>
+            </div>
+            <div class="space-y-4 text-xs md:text-sm text-stone-900 font-bold">
+                <div class="border border-stone-700/40 p-3 bg-white/40">
+                    <span class="text-amber-950 block text-sm font-black mb-1">⚖️ HUKUM & STRUKTUR TALAK:</span>
+                    <p class="font-normal text-stone-800">Talak Raj'ie membolehkan suami merujuk isteri tanpa akad baharu dalam tempoh iddah. Talak Bain (Sughra/Kubra) memutuskan hubungan perkahwinan serta-merta tanpa hak rujuk langsung. Lafaz Soreh berkesan tanpa niat, manakala Kinayah memerlukan pembuktian niat yang disahkan mahkamah.</p>
+                </div>
+                <div class="border border-stone-700/40 p-3 bg-white/40">
+                    <span class="text-amber-950 block text-sm font-black mb-1">🏛️ PROSEDUR & PRINSIP FASAKH:</span>
+                    <p class="font-normal text-stone-800">Fasakh ialah pembubaran perkahwinan melalui perintah Kuasa Kehakiman atas permohonan isteri. Syarat ketat merangkumi tiada nafkah (zahir 3 bulan / batin 1 tahun), kezaliman (dharar syarie), atau penyakit berjangkit/kecacatan kekal. Kesan Fasakh tidak mengurangkan kuota talak suami.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- UTAMA GAMPLAY -->
+    <main class="flex-grow flex items-center justify-center my-4 w-full max-w-6xl mx-auto z-10 relative">
+        
+        <!-- PANDANGAN 1: KAUNTER LOGIN -->
+        <div id="box-login" class="w-full max-w-xl desk-surface p-6 md:p-8 text-center relative">
+            <div class="absolute -top-3 left-6 bg-amber-600 text-stone-950 text-[10px] px-3 py-0.5 font-bold uppercase tracking-widest typewriter-font shadow-lg">SPM ANTI-CHEAT EDITION</div>
+            
+            <div class="mb-6 bg-black/50 p-4 border border-stone-800 text-left">
+                <h3 class="text-amber-500 font-bold text-sm mb-2 typewriter-font uppercase">📂 ANALISIS KBAT TINGKATAN 5: 2 KES UTAMA (RAWAK)</h3>
+                <p class="text-xs text-stone-300 font-mono leading-relaxed">
+                    Sila ambil perhatian, Pegawai Penyiasat. Fail meja ini telah disusun semula secara **rawak**. Setiap detektif akan menerima susunan kes yang berbeza bagi memastikan ketulenan analisis:
+                    <br><br>
+                    <strong>• KES TALAK & FASAKH:</strong> Mengandungi 9 helaian analisis objektif bertingkat tinggi dan 1 helaian rumusan laporan syariah.
+                    <br>
+                    <strong>• MISI KOD RAHSIA:</strong> Jawab soalan dengan tepat untuk mengutip serpihan kod 2 huruf. Di akhir siasatan, anda wajib menyusun kod-kod tersebut semula untuk mengunci fail arkib.
+                </p>
+            </div>
+
+            <div class="space-y-4 text-left font-mono">
+                <div>
+                    <label for="input-name" class="block text-xs font-bold text-stone-400 uppercase mb-2"><i class="fas fa-id-badge mr-1 text-amber-600"></i> Nama Penuh Detektif Bertugas:</label>
+                    <input type="text" id="input-name" placeholder="Taip nama anda untuk cop fail..." class="w-full bg-stone-950 border-2 border-stone-800 focus:border-amber-600 px-4 py-3 text-stone-100 placeholder-stone-700 outline-none text-sm transition-all">
+                </div>
+                
+                <button onclick="mulaGame()" class="w-full py-4 bg-amber-600 hover:bg-amber-500 text-stone-950 font-black transition duration-200 uppercase tracking-wider text-xs typewriter-font shadow-md">
+                    Buka Laci & Periksa Fail Kes 🔎
+                </button>
+            </div>
+        </div>
+
+        <!-- PANDANGAN 2: SUSUN ATUR 3D PEJABAT -->
+        <div id="box-game" class="w-full grid grid-cols-1 lg:grid-cols-3 gap-6 hidden">
+            
+            <!-- HALAMAN FAIL & INTERAKSI SOALAN -->
+            <div class="lg:col-span-2 desk-surface p-4 md:p-6 flex flex-col justify-between relative">
+                
+                <!-- Status Bar Atas Skrin -->
+                <div class="flex justify-between items-center mb-4 bg-black/40 p-2 border border-stone-800 font-mono text-[11px]">
+                    <span id="game-level" class="text-amber-500 font-bold typewriter-font uppercase">Dokumen 1</span>
+                    <div class="w-1/3 bg-stone-950 h-2 border border-stone-800 rounded-none overflow-hidden mx-2">
+                        <div id="progress-bar" class="bg-amber-500 h-full transition-all duration-500" style="width: 10%;"></div>
+                    </div>
+                    <div class="flex gap-3 text-stone-400">
+                        <span>Skor: <span id="game-score" class="text-amber-400 font-bold">0</span></span>
+                        <span>Nyawa: <span id="game-lives" class="text-rose-500 font-bold">3</span>❤️</span>
+                    </div>
+                </div>
+
+                <!-- Paparan Kategori Kes Aktif -->
+                <div id="kes-badge" class="mb-2 text-left font-mono text-[10px] font-black uppercase px-2 py-1 bg-amber-950/40 text-amber-400 border border-amber-900/40 inline-block max-w-max">
+                    MEMPROSES FAIL...
+                </div>
+
+                <!-- Paparan Visual Fail Manila Fizikal -->
+                <div class="manila-folder-3d p-4 md:p-6 text-left mb-4">
+                    <span class="text-[10px] text-stone-700 font-bold uppercase tracking-wider courier-font block border-b border-stone-800/20 pb-1 mb-2">
+                        <i class="fas fa-file-lines mr-1 text-amber-900"></i> EKSHIBIT & KRONOLOGI FAKTA KES:
+                    </span>
+                    <p id="game-situation" class="text-stone-950 text-xs md:text-sm font-bold courier-font leading-relaxed"></p>
+                </div>
+
+                <!-- Paparan Arahan Soalan Terminal -->
+                <div class="text-left mb-4 bg-stone-950 p-3 border border-stone-800 font-mono">
+                    <h3 id="game-question" class="text-xs md:text-sm font-bold text-amber-400 tracking-wide"></h3>
+                </div>
+
+                <!-- Pilihan Jawapan -->
+                <div id="options-container" class="space-y-2 mb-4"></div>
+
+                <!-- Justifikasi Alasan Bertulis -->
+                <div id="justification-container" class="text-left mb-4 hidden font-mono">
+                    <label for="input-justification" class="block text-xs font-bold text-amber-500 uppercase mb-2">Nota Analisis Justifikasi Hukum (Sila nyatakan kaedah Fiqh/Hujah anda):</label>
+                    <textarea id="input-justification" placeholder="Tulis hujah intelek berdasarkan pemahaman buku teks Tingkatan 5..." class="w-full h-20 bg-stone-950 border-2 border-stone-800 focus:border-amber-600 p-2 text-stone-200 text-xs outline-none resize-none"></textarea>
+                </div>
+
+                <!-- Pelan Tindakan Akhir -->
+                <div id="action-plan-container" class="text-left mb-4 hidden font-mono space-y-3">
+                    <p class="text-xs font-bold text-amber-400 uppercase border-b border-stone-800 pb-1">Rumusan Laporan Siasatan Syariah:</p>
+                    <div>
+                        <label class="block text-[11px] text-stone-400 mb-1">Pada pendapat anda, mengapakah Islam memberikan hak permohonan Fasakh khusus kepada isteri (Safiyah) manakala kuasa Talak berada di tangan suami (Kamal)? Bincangkan keadilan pembahagian ini.</label>
+                        <textarea id="input-plan-1" placeholder="Tulis jawapan bernas anda di sini untuk markah bonus..." class="w-full h-24 bg-stone-950 border-2 border-stone-800 focus:border-amber-600 p-2 text-stone-200 text-xs outline-none resize-none"></textarea>
+                    </div>
+                </div>
+
+                <!-- Maklum balas Betul/Salah -->
+                <div id="game-feedback" class="text-center font-bold text-xs min-h-[40px] flex items-center justify-center px-4 transition-all duration-200 font-mono"></div>
+
+                <button id="btn-next" onclick="bukaDecoderGate(); tapFX('click');" class="w-full mt-2 py-3.5 bg-stone-200 hover:bg-white text-stone-950 font-black transition duration-200 flex items-center justify-center gap-2 text-xs uppercase tracking-wider typewriter-font hidden shadow-md">
+                    <span>Kemaskini Fail Arkib</span> ➡️
+                </button>
+            </div>
+
+            <!-- TERMINAL CRT KOMPUTER & LOG (KANAN) -->
+            <div class="flex flex-col gap-4">
+                <div class="crt-terminal p-4 flex-grow text-left flex flex-col justify-between min-h-[250px]">
+                    <div>
+                        <div class="flex items-center gap-2 border-b border-emerald-950 pb-1.5 mb-3">
+                            <span class="text-emerald-500 text-xs animate-pulse">●</span>
+                            <span class="text-[10px] font-black text-emerald-500 tracking-widest typewriter-font">INTELLIGENCE TERMINAL</span>
+                        </div>
+                        <div class="bg-black/60 text-emerald-400 p-3 border border-emerald-900/30 text-[11px] font-mono leading-relaxed">
+                            <span class="font-bold block text-emerald-300">📂 INPUT PROSES SAH KES:</span>
+                            • STATUS PEMAIN: AKTIF <br>
+                            • FAKTOR RAWAKAN: DIAKTIFKAN <br>
+                            • ARAS UJIAN: KBAT TINGKATAN 5
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-2 border-t border-emerald-950 font-mono">
+                        <span class="text-[10px] font-bold text-stone-400 uppercase block mb-1.5"><i class="fas fa-list-ol mr-1 text-amber-600"></i> LOG KEPUTUSAN TERKINI:</span>
+                        <div class="overflow-y-auto max-h-[120px] space-y-1 text-[10px] text-emerald-500/80 pr-1" id="leaderboard-list"></div>
+                    </div>
+                </div>
+
+                <div class="desk-drawer p-4 text-left">
+                    <span class="text-[11px] font-bold text-stone-400 uppercase block mb-2 font-mono"><i class="fas fa-box-archive mr-1 text-amber-700"></i> Kit Rujukan Pantas:</span>
+                    <button onclick="bukaDompet(); tapFX('mystery');" class="w-full bg-stone-900 hover:bg-stone-850 border-2 border-amber-800/40 p-3 flex flex-col items-center justify-center transition active:scale-95 shadow-inner">
+                        <span class="text-2xl">📚</span>
+                        <span class="text-[10px] font-black text-amber-500 uppercase font-mono mt-1">Buka Rujukan Syariah</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SKRIN ANTARA KES: MESIN PENGEKOD KOD FAIL -->
+        <div id="box-code-reveal" class="w-full max-w-md desk-surface p-6 text-center hidden font-mono">
+            <div class="text-4xl mb-2 text-amber-500">🗝️</div>
+            <h3 class="text-lg font-bold text-amber-400 mb-1 uppercase typewriter-font">Mesin Indeks Fail Meja</h3>
+            <p class="text-xs text-stone-400 mb-4">Sila masukkan semula kod indeks pembuktian berpasangan untuk mengesahkan helaian fail ini ke dalam memori detektif.</p>
+            <div class="bg-stone-950 p-4 border border-stone-800 mb-4">
+                <p id="code-reveal-clue" class="text-xs text-stone-500 italic mb-2"></p>
+                <div class="text-4xl font-black text-amber-500 tracking-widest typewriter-font" id="revealed-letter">--</div>
+            </div>
+            <div class="space-y-3 mb-4 text-left">
+                <input type="text" id="input-gate-code" placeholder="2 HURUF KOD" maxlength="2" class="w-full bg-stone-950 border-2 border-stone-800 focus:border-amber-600 px-4 py-3 text-amber-400 font-bold text-center text-xl outline-none uppercase transition-all" autocomplete="off">
+                <p id="decoder-error" class="text-xs text-rose-500 font-semibold text-center hidden">❌ Kod pengesahan salah! Perhatikan paparan di atas.</p>
+            </div>
+            <button onclick="sahkanKodGate()" class="w-full py-3 bg-amber-600 hover:bg-amber-700 text-stone-950 font-black text-xs tracking-wider uppercase shadow-md">🔓 Sahkan Helaian</button>
+        </div>
+
+        <!-- SKRIN ANTARA KES: BLOK SUSUN PERKATAAN INDEKS -->
+        <div id="box-code-puzzle" class="w-full max-w-md desk-surface p-6 text-center hidden font-mono">
+            <div class="text-4xl mb-2 text-amber-500">🔓</div>
+            <h3 class="text-lg font-bold text-amber-400 mb-1 uppercase typewriter-font">Penyusunan Blok Indeks Kes Akhir</h3>
+            <p class="text-xs text-stone-400 mb-4">Susun serpihan kod yang telah anda kutip sepanjang permainan untuk membina jawapan kata kunci perundangan utama.</p>
+            <div class="bg-stone-950 p-4 border border-stone-800 mb-4 min-h-[60px] flex items-center justify-center">
+                <div id="puzzle-slots" class="flex justify-center gap-2 flex-wrap"></div>
+            </div>
+            <div class="mb-5">
+                <div id="puzzle-letter-pool" class="flex justify-center gap-2 flex-wrap"></div>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="padamSusunanPuzzle(); tapFX('click');" class="w-1/3 py-3 bg-stone-800 hover:bg-stone-700 text-stone-300 text-xs font-bold shadow-md">Padam</button>
+                <button onclick="sahkanPuzzleAkhir()" class="w-2/3 py-3 bg-amber-600 hover:bg-amber-700 text-stone-950 font-black text-xs tracking-wide shadow-md">Sahkan Kes Kunci Fail 🏆</button>
+            </div>
+            <p id="puzzle-error" class="text-xs text-rose-500 font-semibold text-center mt-3 hidden">❌ Gabungan ejaan salah. Pembubaran perkahwinan yang disiasat mestilah: TALAKFASAKH.</p>
+        </div>
+
+        <!-- RATING BINTANG ELEMEN AKHIR -->
+        <div id="box-reflection" class="w-full max-w-md desk-surface p-6 text-center hidden font-mono">
+            <div class="mb-4 border-b border-stone-800 pb-3">
+                <h2 class="text-lg font-bold text-amber-100 uppercase typewriter-font">Integriti Penilaian Kes</h2>
+            </div>
+            <div class="my-6">
+                <div class="flex justify-center gap-3 text-3xl my-3 star-rating">
+                    <i class="far fa-star cursor-pointer text-stone-600 transition" onclick="pilihBintangKefahaman(1)" id="star-1"></i>
+                    <i class="far fa-star cursor-pointer text-stone-600 transition" onclick="pilihBintangKefahaman(2)" id="star-2"></i>
+                    <i class="far fa-star cursor-pointer text-stone-600 transition" onclick="pilihBintangKefahaman(3)" id="star-3"></i>
+                    <i class="far fa-star cursor-pointer text-stone-600 transition" onclick="pilihBintangKefahaman(4)" id="star-4"></i>
+                    <i class="far fa-star cursor-pointer text-stone-600 transition" onclick="pilihBintangKefahaman(5)" id="star-5"></i>
+                </div>
+                <p id="star-desc" class="text-xs text-amber-500 font-bold mt-2 italic">Nilai tahap pemahaman anda...</p>
+            </div>
+            <div id="sheet-sending-status" class="text-xs text-amber-400 text-center font-bold py-2 hidden animate-pulse bg-black/40 border border-stone-800 mb-3">
+                <i class="fas fa-spinner fa-spin mr-1"></i> Mengarkibkan data siasatan ke Cloud...
+            </div>
+            <button onclick="hantarPenilaianBintang()" id="btn-submit-rating" disabled class="w-full py-4 bg-stone-800 text-stone-500 font-black text-xs cursor-not-allowed uppercase shadow-md">
+                Hantar Laporan & Kunci Fail 📄
+            </button>
+        </div>
+
+        <!-- SKRIN PENUTUP GAME / KEPUTUSAN ARKIB -->
+        <div id="box-end" class="w-full max-w-2xl desk-surface p-6 text-center hidden font-mono">
+            <div id="end-badge" class="text-6xl mb-3">📁</div>
+            <h2 id="end-title" class="text-2xl font-black mb-2 text-amber-400 typewriter-font uppercase">FAIL PENGHAKIMAN DIARKIBKAN</h2>
+            <p id="end-msg" class="text-stone-300 text-xs md:text-sm leading-relaxed mb-6 text-left border-2 border-stone-800 p-4 bg-black/50"></p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-left text-xs">
+                <div class="bg-black/50 border border-stone-800 p-4 shadow-inner flex flex-col justify-between">
+                    <div>
+                        <div class="text-3xl font-black text-amber-400"><span id="end-score">0</span>/200 PTS</div>
+                        <div class="mt-2 text-[10px] bg-stone-900 px-2 py-1 border border-stone-800 text-stone-400 font-bold">
+                            Gred Detektif: <span id="end-evaluation" class="text-amber-400 font-black">-</span>
+                        </div>
+                        <div id="display-text-evidence" class="mt-3 text-[11px] text-stone-400 border-t border-stone-800 pt-2"></div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-stone-800 space-y-2">
+                        <button onclick="mintaPengesahanPadam(); tapFX('click');" class="w-full py-1.5 bg-rose-950/40 hover:bg-rose-950 text-rose-400 text-[10px] font-bold border border-rose-900/40">🗑️ Padam Rekod Peranti</button>
+                        <button onclick="muatTurunRekodCSV(); tapFX('click');" class="w-full py-2.5 bg-amber-600 hover:bg-amber-500 text-stone-950 font-black uppercase text-xs">📥 Eksport Rekod Murid (CSV)</button>
+                    </div>
+                </div>
+                <div class="bg-black/50 border border-stone-800 p-4 shadow-inner">
+                    <span class="text-[11px] text-stone-400 font-black block mb-2 uppercase tracking-wider border-b border-stone-800 pb-1"><i class="fas fa-database mr-1 text-emerald-600"></i> Arkib Pangkalan Data Pejabat</span>
+                    <div class="overflow-y-auto max-h-[160px] space-y-1.5 text-[10px]" id="leaderboard-list-end"></div>
+                </div>
+            </div>
+            <button onclick="mainSemula(); tapFX('click');" class="w-full py-3.5 bg-amber-600 hover:bg-amber-500 text-stone-950 font-black text-xs uppercase tracking-wider shadow-md">Siasat Fail Baru 🔄</button>
+        </div>
+
+        <!-- FALLBACK MAKLUMAT LULUSAN KOSONG IOS -->
+        <div id="box-ios-fallback" class="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 hidden">
+            <div class="bg-stone-900 border-2 border-amber-700 p-5 max-w-lg w-full font-mono text-xs">
+                <textarea id="ios-csv-text" readonly class="w-full h-36 bg-black p-2 text-stone-400 text-[10px] border border-stone-800 outline-none resize-none"></textarea>
+                <button onclick="tutupIosFallback(); tapFX('click');" class="w-full py-3 bg-amber-600 text-stone-950 font-bold mt-3">Tutup Laporan</button>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="w-full text-center py-4 text-stone-600 font-mono text-[10px] border-t border-stone-950 z-10 relative">
+        <p>&copy; 2026 Pejabat Detektif Syariah - Sistem Ujian KBAT Syariah.</p>
+    </footer>
+
+    <script>
+        const defaultApiUrl = "https://script.google.com/macros/s/AKfycbz6sAv1ru7sNSkXBS8sg4UGWYVr8SaRPg-oNWwNIGsfV295PKXOYPVNaxNDbd0_dPzKVQ/exec";
+
+        // Bank soalan asal
+        const bankSoalanAsal = [
+            { 
+                kes: "FAIL KES: TALAK BERSYARAT (KAMAL)",
+                sit: "EKSHIBIT 1 (Lafaz Bersyarat): Kamal telah melafazkan: 'Jika engkau melangkah keluar dari pintu pagar rumah ini minggu ini untuk ke perhimpunan itu, maka gugurlah talak satu ke atasmu.' Isterinya terpaksa keluar kecemasan kerana urusan perubatan ibu kandungnya.", 
+                q: "Sebagai peguam syarie, analisis jenis talak ini dan implikasinya terhadap status perkahwinan mereka jika perkara tersebut berlaku.", 
+                opt: [
+                    "Talak dikira batal kerana isteri keluar atas dasar kecemasan (darurat Syarie).", 
+                    "Ia merupakan Talak Taklik. Talak akan jatuh secara automatik sebaik sahaja syarat dilanggar, tanpa mengira apa pun alasan isteri.", 
+                    "Talak tidak jatuh tetapi Kamal wajib membayar denda Kaffarah sumpah di Mahkamah Syariah.",
+                    "Talak dikira sebagai Talak Bain Sughra yang menghalang sebarang bentuk rujuk kembali."
+                ], 
+                ans: 1, kod: "TA", petunjukKod: "\"Dapatkan 2 huruf awal bagi kata kunci TALAK\"", tipe: "normal"
+            },
+            { 
+                kes: "FAIL KES: LAFAZ KIASAN (KAMAL)",
+                sit: "EKSHIBIT 2 (Lafaz Kiasan Berimpak): Kamal dalam keadaan tenang menghantar mesej bertulis kepada isterinya: 'Urusan kita sudah selesai di sini, lepaskan diri awak dan jangan cari saya lagi.' Di mahkamah, Kamal mendakwa dia hanya berniat untuk meminta isterinya bercuti.", 
+                q: "Bagaimanakah Mahkamah Syariah menyelesaikan implikasi hukum bagi lafaz Kinayah (kiasan) yang dipertikaikan niatnya seperti kes Kamal?", 
+                opt: [
+                    "Mahkamah menolak dakwaan Kamal dan menjatuhkan talak secara automatik demi keselamatan.", 
+                    "Mesej bertulis dikira sebagai lafaz Soreh pada zaman moden, maka talak tetap jatuh tanpa mengira niat.", 
+                    "Talak tidak jatuh kerana beban pembuktian niat terletak pada pengakuan Kamal (suami) di bawah sumpah, sekiranya tiada bukti zahir lain yang menyangkalnya.",
+                    "Kes ditangguhkan selama 3 bulan untuk membolehkan isteri mengemukakan 2 saksi lelaki."
+                ], 
+                ans: 2, kod: "LA", petunjukKod: "\"Dapatkan 2 huruf berikutnya bagi kata kunci TALAK\"", tipe: "normal"
+            },
+            { 
+                kes: "FAIL KES: STATUS KEHAMILAN (KAMAL)",
+                sit: "EKSHIBIT 3 (Pembahagian Kesan Hukum): Kamal menceraikan isterinya yang sedang hamil anak pertama mereka dengan talak satu akibat perselisihan faham keluarga.", 
+                q: "Bandingkan implikasi hak rujuk dan tempoh iddah bagi keadaan ini mengikut hukum syarak Tingkatan 5.", 
+                opt: [
+                    "Talak dikira Raj'ie, suci daripada haid selama 3 kali suci, dan suami boleh rujuk pada bila-bila masa.", 
+                    "Talak dikira Bain, iddahnya serta-merta tamat sebaik sahaja talak dilafazkan tanpa perlu menunggu.", 
+                    "Talak dikira Raj'ie, tempoh iddahnya adalah sehingga isteri melahirkan kandungan tersebut, dan suami berhak rujuk sepanjang tempoh itu.",
+                    "Talak dikira haram (Talak Bid'ie) dan tidak sah, maka ikatan nikah tidak terputus sama sekali."
+                ], 
+                ans: 2, kod: "KF", petunjukKod: "\"Gandingan huruf penutup TALAK (K) dan huruf pembuka FASAKH (F)\"", tipe: "normal"
+            },
+            { 
+                kes: "FAIL KES: WAKTU HAID (KAMAL)",
+                sit: "EKSHIBIT 4 (Analisis Talak Bid'ie): Kamal melafazkan talak satu kepada isterinya ketika isterinya sedang dalam keadaan datang haid (uzur syarie).", 
+                q: "Nilaikan status kes dari sudut kesahan hukum (keesahan jatuhnya talak) dan implikasi dosa perbuatan tersebut.", 
+                opt: [
+                    "Talak tidak sah dan tidak jatuh kerana melanggar pantang larang waktu suci.", 
+                    "Talak tetap sah and jatuh (dikira satu talak), tetapi perbuatan Kamal adalah haram dan berdosa (Talak Bid'ie).", 
+                    "Talak menjadi sah hanya jika disaksikan oleh pegawai tadbir agama daerah.",
+                    "Talak bertukar secara automatik menjadi Talak Bain Kubra yang mengharamkan rujuk."
+                ], 
+                ans: 1, kod: "AS", petunjukKod: "\"Dapatkan 2 huruf selepas huruf kepala bagi kata kunci FASAKH\"", tipe: "normal"
+            },
+            { 
+                kes: "FAIL KES: RUJUK PASCA-IDDAH (KAMAL)",
+                sit: "EKSHIBIT 5 (Implikasi Kuota Pasca-Bain): Selepas tamat tempoh iddah daripada Talak Raj'ie yang pertama, Kamal dan bekas isterinya ingin membina semula rumah tangga kerana sedar akan kesilapan mereka.", 
+                q: "Berdasarkan prinsip pembahagian bahagian talak, apakah prosedur rasmi yang wajib dipatuhi dan berapakah baki kuota talak yang tinggal bagi Kamal?", 
+                opt: [
+                    "Boleh rujuk lisan sahaja tanpa daftar, baki talak kekal tiga.", 
+                    "Ikatan perkahwinan telah menjadi Bain Sughra; mereka wajib melalui akad nikah dan mahar yang baharu, manakala baki talak Kamal berkurang menjadi dua.", 
+                    "Wajib melalui proses pengesahan mahkamah dengan denda tebus talak, baki talak kekal dua.",
+                    "Tidak boleh berkahwin semula melainkan bekas isteri berkahwin dengan lelaki lain terlebih dahulu."
+                ], 
+                ans: 1, kod: "AK", petunjukKod: "\"Dapatkan 2 huruf sebelum penutup bagi kata kunci FASAKH\"", tipe: "justifikasi"
+            },
+            { 
+                kes: "FAIL KES: ALASAN KECACATAN (SAFIYAH)",
+                sit: "EKSHIBIT 6 (Tuntutan Hak Isteri): Safiyah hadir ke Mahkamah Syariah memohon pembubaran perkahwinan secara mutlak kerana suaminya disahkan menghidap penyakit gila/kecacatan kekal yang menghalang kewajipan batin, sedangkan perkara ini dirahsiakan sebelum perkahwinan.", 
+                q: "Mengapakah Safiyah memilih saluran 'Fasakh' berbanding proses Talak biasa dalam menyelesaikan konflik undang-undang perkahwinan ini?", 
+                opt: [
+                    "Kerana Fasakh memberikan hak kepada Safiyah untuk menuntut 100% wang hantaran dipulangkan.", 
+                    "Kerana Fasakh adalah satu-satunya hak pembubaran melalui kuasa Hakim yang boleh dituntut oleh isteri apabila suami enggan melepaskan talak secara sukarela.", 
+                    "Kerana proses Fasakh tidak memerlukan sebarang pembuktian dokumen klinikal di mahkamah.",
+                    "Kerana Fasakh secara automatik akan menggugurkan hak penjagaan anak (Hadanah) daripada suami."
+                ], 
+                ans: 1, kod: "H1", petunjukKod: "\"Huruf penutup FASAKH (H) digandingkan dengan angka 1\"", tipe: "normal"
+            },
+            { 
+                kes: "FAIL KES: GAGAL NAFKAH (SAFIYAH)",
+                sit: "EKSHIBIT 7 (Analisis Tempoh Nafkah): Suami Safiyah telah meninggalkan rumah tanpa sebarang berita. Safiyah mengemukakan penyata bank yang membuktikan tiada sebarang transaksi nafkah zahir selama 4 bulan berturut-turut.", 
+                q: "Nilaikan sama ada bukti garisan masa kegagalan nafkah ini memenuhi syarat minimum kelulusan Fasakh di bawah Enakmen Undang-Undang Keluarga Islam.", 
+                opt: [
+                    "Tidak layak, kerana syarat minimum tiada nafkah zahir mestilah berlarutan melebihi tempoh satu tahun.", 
+                    "Ya layak, kerana undang-undang menetapkan tempoh minimum kegagalan menyediakan nafkah zahir adalah selama 3 bulan.", 
+                    "Tidak layak, isteri wajib mencari suami sehingga berjumpa sebelum fail boleh dibuka.",
+                    "Ya layak, tetapi mahkamah akan memaksa Safiyah membayar denda ganti rugi ketidakhadiran."
+                ], 
+                ans: 1, kod: "H2", petunjukKod: "\"Huruf penutup FASAKH (H) digandingkan dengan angka 2\"", tipe: "normal"
+            },
+            { 
+                kes: "FAIL KES: ANCAMAN DHARAR (SAFIYAH)",
+                sit: "EKSHIBIT 8 (Beban Pembuktian Dharar): Safiyah mendakwa mengalami tekanan mental yang dahsyat (Dharar Syarie) akibat suaminya sering mencuba memaksanya melakukan perbuatan yang bertentangan dengan syariat Islam.", 
+                q: "Apakah elemen utama yang perlu dibuktikan oleh Safiyah di hadapan Hakim bagi memastikan tuntutan Fasakh atas alasan Dharar ini diluluskan?", 
+                opt: [
+                    "Cukup sekadar dakwaan lisan Safiyah tanpa memerlukan sebarang bukti sokongan luar.", 
+                    "Safiyah wajib mengemukakan bukti kukuh (saksi, laporan pakar atau dokumen bertulis) yang menunjukkan perbuatan suami mendatangkan bahaya kepada agama, nyawa, akal atau maruahnya.", 
+                    "Mesti mendapatkan surat keizinan bertulis daripada bapa mertua (wali suami).",
+                    "Menunjukkan bukti bahawa suami mempunyai simpanan harta yang tidak dibahagikan."
+                ], 
+                ans: 1, kod: "H3", petunjukKod: "\"Huruf penutup FASAKH (H) digandingkan dengan angka 3\"", tipe: "normal"
+            },
+            { 
+                kes: "FAIL KES: IMPLIKASI PERINTAH (SAFIYAH)",
+                sit: "EKSHIBIT 9 (Impak Struktur Perkahwinan): Hakim Mahkamah Syariah akhirnya meluluskan permohonan Safiyah dan membubarkan perkahwinan mereka melalui perintah bertulis Fasakh.", 
+                q: "Rumuskan kesan perundangan bagi keputusan Fasakh ini terhadap status hubungan masa depan dan bilangan baki kuota talak bekas suaminya.", 
+                opt: [
+                    "Hubungan terputus sebagai Bain Sughra (tidak boleh rujuk dalam iddah), dan keputusan ini TIDAK mengurangkan bilangan kuota talak asal suami.", 
+                    "Hubungan dikira sebagai Talak Raj'ie yang memberi hak suami untuk merujuk Safiyah tanpa persetujuannya.", 
+                    "Kuota talak suami berkurang secara automatik sebanyak satu angka (menjadi baki talak dua).",
+                    "Perkahwinan dibatalkan dan Safiyah dilarang sama sekali untuk berkahwin dengan mana-mana lelaki lain seumur hidup."
+                ], 
+                ans: 0, kod: "H4", petunjukKod: "\"Huruf penutup FASAKH (H) digandingkan dengan angka 4\"", tipe: "normal"
+            },
+            { 
+                kes: "FAIL KES: LAPORAN AKHIR DETEKTIF",
+                sit: "ARKIB RUMUSAN PEJABAT: Anda telah selesai menyemak dan menganalisis kesemua fail kes rujukan peringkat tinggi (Kes Kamal & Kes Safiyah).", 
+                q: "Sila catatkan hujah rumusan intelek anda mengenai pembagian kuasa talak dan fasakh sebelum mengunci fail.", 
+                opt: [], ans: -1, kod: "XX", petunjukKod: "\"Kod Akhir Pentadbiran\"", tipe: "amalan"
+            }
+        ];
+
+        let senaraiSoalan = []; // Akan diisi secara rawak semasa mula permainan
+        let indeksSekarang = 0; let nyawa = 3; let skor = 0;
+        let namaPemain = ""; let kodKutipanPemain = []; let susunanPuzzlePemain = [];
+        let modalActionOnConfirm = null; let inMemoryStorage = {};
+        let bintangTerpilih = 0; let dataJustifikasi = ""; let dataAmalan = ["", "", ""];
+
+        // Pembahagian token pembentuk teka-teki sasaran: TALAKFASAKH
+        const sasaranAbjadPool = ["T", "A", "L", "A", "K", "F", "A", "S", "A", "K", "H"];
+
+        function shuffleArray(array) {
+            // Memisahkan soalan akhir (rumusan) supaya ia sentiasa kekal di kedudukan terakhir
+            let objektif = array.slice(0, array.length - 1);
+            let rumusan = array[array.length - 1];
+            
+            // Menggunakan Fisher-Yates shuffle untuk merawakkan soalan objektif
+            for (let i = objektif.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [objektif[i], objektif[j]] = [objektif[j], objektif[i]];
+            }
+            
+            // Gabungkan semula dengan soalan rumusan di akhir sekali
+            return [...objektif, rumusan];
+        }
+
+        function dapatkanSkorSelamat() {
+            try { return localStorage.getItem('senaraiSkorSyariahRawak') ? JSON.parse(localStorage.getItem('senaraiSkorSyariahRawak')) : []; } catch (e) { return inMemoryStorage['senaraiSkorSyariahRawak'] || []; }
+        }
+        function setSkorSelamat(s) {
+            try { localStorage.setItem('senaraiSkorSyariahRawak', JSON.stringify(s)); } catch (e) { inMemoryStorage['senaraiSkorSyariahRawak'] = s; }
+        }
+
+        const AudioFX = {
+            ctx: null,
+            init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
+            playClick() {
+                this.init(); const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
+                osc.type = 'sine'; osc.frequency.setValueAtTime(550, this.ctx.currentTime);
+                gain.gain.setValueAtTime(0.08, this.ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
+                osc.connect(gain); gain.connect(this.ctx.destination); osc.start(); osc.stop(this.ctx.currentTime + 0.05);
+            },
+            playCorrect() {
+                this.init(); const now = this.ctx.currentTime;
+                [440, 554.37, 659.25].forEach((f, i) => {
+                    const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
+                    osc.frequency.setValueAtTime(f, now + i*0.07); gain.gain.setValueAtTime(0.08, now + i*0.07);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + i*0.07 + 0.12);
+                    osc.connect(gain); gain.connect(this.ctx.destination); osc.start(now + i*0.07); osc.stop(now + i*0.07 + 0.12);
+                });
+            },
+            playWrong() {
+                this.init(); const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(110, this.ctx.currentTime);
+                osc.frequency.linearRampToValueAtTime(70, this.ctx.currentTime + 0.25);
+                gain.gain.setValueAtTime(0.12, this.ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+                osc.connect(gain); gain.connect(this.ctx.destination); osc.start(); osc.stop(this.ctx.currentTime + 0.25);
+            },
+            playMystery() {
+                this.init(); const now = this.ctx.currentTime;
+                [146.83, 220, 293.66].forEach((f, i) => {
+                    const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
+                    osc.type = 'triangle'; osc.frequency.setValueAtTime(f, now + i*0.15);
+                    gain.gain.setValueAtTime(0.08, now + i*0.15); gain.gain.exponentialRampToValueAtTime(0.001, now + i*0.15 + 0.4);
+                    osc.connect(gain); gain.connect(this.ctx.destination); osc.start(now + i*0.15); osc.stop(now + i*0.15 + 0.4);
+                });
+            },
+            playWin() {
+                this.init(); const now = this.ctx.currentTime;
+                [261.63, 329.63, 392, 523.25].forEach((f, i) => {
+                    const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
+                    osc.frequency.setValueAtTime(f, now + i*0.09); gain.gain.setValueAtTime(0.12, now + i*0.09);
+                    gain.gain.exponentialRampToValueAtTime(0.02, now + i*0.09 + 0.35);
+                    osc.connect(gain); gain.connect(this.ctx.destination); osc.start(now + i*0.09); osc.stop(now + i*0.09 + 0.35);
+                });
+            }
+        };
+
+        function tapFX(type) {
+            try {
+                if(type === 'click') AudioFX.playClick();
+                if(type === 'correct') AudioFX.playCorrect();
+                if(type === 'wrong') AudioFX.playWrong();
+                if(type === 'mystery') AudioFX.playMystery();
+                if(type === 'win') AudioFX.playWin();
+            } catch(e) { console.log("Audio Error"); }
+        }
+
+        function tampilkanModal(tajuk, pesan, ikon = "⚠️", tunjukBatal = false, tindakanSahkan = null) {
+            document.getElementById('modal-icon').innerText = ikon;
+            document.getElementById('modal-title').innerText = tajuk;
+            document.getElementById('modal-msg').innerText = pesan;
+            document.getElementById('modal-btn-secondary').classList.toggle('hidden', !tunjukBatal);
+            modalActionOnConfirm = tindakanSahkan;
+            document.getElementById('custom-modal').classList.remove('hidden');
+        }
+        function tutupModal() { document.getElementById('custom-modal').classList.add('hidden'); }
+        document.getElementById('modal-btn-primary').onclick = function() { tapFX('click'); if (modalActionOnConfirm) modalActionOnConfirm(); tutupModal(); };
+
+        function bukaDompet() { document.getElementById('wallet-modal').classList.remove('hidden'); }
+        function tutupDompet() { document.getElementById('wallet-modal').classList.add('hidden'); }
+
+        window.mulaGame = function() {
+            tapFX('click');
+            namaPemain = document.getElementById('input-name').value.trim();
+            if (!namaPemain) { 
+                tampilkanModal("Kad Pengenalan Detektif", "Sila masukkan nama penuh anda untuk mendaftar masuk laci fail!", "💼"); 
+                return; 
+            }
+            
+            // Rawakkan susunan soalan pada permulaan setiap game
+            senaraiSoalan = shuffleArray([...bankSoalanAsal]);
+            
+            document.getElementById('box-login').classList.add('hidden');
+            document.getElementById('box-game').classList.remove('hidden');
+            indeksSekarang = 0; nyawa = 3; skor = 0; kodKutipanPemain = [];
+            kemasKiniStatusVisual(); paparSoalan();
+            tampilkanModal("Siasatan Rawak Bermula", `Detektif ${namaPemain}, susunan fail meja anda telah dirawakkan secara automatik. Sila buat analisis integriti dengan berhati-hati!`, "📂");
+        };
+
+        function kemasKiniStatusVisual() {
+            document.getElementById('game-lives').innerText = nyawa;
+            document.getElementById('game-score').innerText = skor;
+        }
+
+        function paparSoalan() {
+            document.getElementById('btn-next').classList.add('hidden');
+            document.getElementById('justification-container').classList.add('hidden');
+            document.getElementById('action-plan-container').classList.add('hidden');
+            document.getElementById('game-feedback').innerText = "";
+            document.getElementById('game-feedback').className = "text-center font-bold text-xs min-h-[40px] flex items-center justify-center px-4 transition-all duration-200 font-mono";
+            
+            let data = senaraiSoalan[indeksSekarang];
+            document.getElementById('game-level').innerText = "Helaian " + (indeksSekarang + 1) + " / 10";
+            document.getElementById('progress-bar').style.width = ((indeksSekarang + 1) / senaraiSoalan.length) * 100 + "%";
+            
+            document.getElementById('kes-badge').innerText = data.kes;
+            document.getElementById('game-situation').innerText = data.sit;
+            document.getElementById('game-question').innerText = data.q;
+            
+            let bekasOpt = document.getElementById('options-container');
+            bekasOpt.innerHTML = "";
+            
+            if (data.tipe === "normal" || data.tipe === "justifikasi") {
+                data.opt.forEach((pilihan, indeks) => {
+                    let btn = document.createElement('button');
+                    btn.className = "opt-btn w-full text-left bg-stone-950 hover:bg-stone-850 text-stone-300 border-2 border-stone-900 p-3.5 flex items-start gap-3 text-xs font-mono transition-all active:scale-[0.99]";
+                    const abjad = ["A", "B", "C", "D"][indeks];
+                    btn.innerHTML = `<span class="bg-stone-900 text-amber-500 font-bold px-2 py-0.5 border border-stone-800 text-[10px] mt-0.5">${abjad}</span> <span class="flex-1">${pilihan}</span>`;
+                    btn.onclick = () => { tapFX('click'); semakJawapan(indeks, btn); };
+                    bekasOpt.appendChild(btn);
+                });
+            } else if (data.tipe === "amalan") {
+                document.getElementById('action-plan-container').classList.remove('hidden');
+                document.getElementById('btn-next').classList.remove('hidden');
+                document.getElementById('btn-next').innerHTML = `<span>Simpan & Buka Papan Penyusunan Kod Akhir 🏆</span>`;
+                document.getElementById('btn-next').className = "w-full mt-2 py-4 bg-amber-600 text-stone-950 font-black text-xs uppercase typewriter-font shadow-md";
+            }
+        }
+
+        function semakJawapan(pilihanMurid, butangDitekan) {
+            let data = senaraiSoalan[indeksSekarang];
+            document.querySelectorAll('.opt-btn').forEach(b => { b.disabled = true; });
+            const fb = document.getElementById('game-feedback');
+            
+            if (pilihanMurid === data.ans) {
+                tapFX('correct'); skor += 20;
+                butangDitekan.className = "opt-btn w-full text-left bg-emerald-950/50 text-emerald-400 border-2 border-emerald-600 p-3.5 text-xs font-mono";
+                fb.innerText = "✓ ANALISIS TEPAT: Hujah tafsiran selari dengan ketetapan perundangan Islam Aras Tinggi.";
+                fb.classList.add('text-emerald-400', 'bg-emerald-950/20');
+            } else {
+                tapFX('wrong'); nyawa -= 1;
+                butangDitekan.className = "opt-btn w-full text-left bg-rose-950/50 text-rose-400 border-2 border-rose-600 p-3.5 text-xs font-mono";
+                fb.innerText = "𐄂 RUMUSAN SILAP: Penilaian fakta kes menjejaskan ketepatan prinsip undang-undang.";
+                fb.classList.add('text-rose-400', 'bg-rose-950/20');
+                document.querySelectorAll('.opt-btn')[data.ans].className = "opt-btn w-full text-left bg-emerald-950/50 text-emerald-400 border-2 border-emerald-600 p-3.5 text-xs font-mono";
+            }
+            
+            if (data.tipe === "justifikasi") document.getElementById('justification-container').classList.remove('hidden');
+            document.getElementById('btn-next').classList.remove('hidden');
+            kemasKiniStatusVisual();
+
+            if (nyawa <= 0) {
+                document.getElementById('btn-next').innerHTML = `<span>Gagal Menyemak Kes (Fail Ditutup) 💀</span>`;
+                document.getElementById('btn-next').className = "w-full mt-2 py-4 bg-rose-900 text-white font-black text-xs uppercase shadow-md";
+            }
+        }
+
+        window.bukaDecoderGate = function() {
+            if (nyawa <= 0) { simpanSkorPemain(0); tamatGame(false); return; }
+            let data = senaraiSoalan[indeksSekarang];
+            
+            if (data.tipe === "justifikasi") {
+                const j = document.getElementById('input-justification').value.trim();
+                if (!j) { tampilkanModal("Nota Siasatan", "Sila masukkan nota hujah analisis syariah anda terlebih dahulu!", "✍️"); return; }
+                dataJustifikasi = j;
+            }
+            if (data.tipe === "amalan") {
+                const p1 = document.getElementById('input-plan-1').value.trim();
+                if (!p1) { tampilkanModal("Laporan Akhir", "Sila masukkan rumusan pengajaran sebelum memfailkan kes.", "📝"); return; }
+                dataAmalan = [p1, "-", "-"]; skor += 20;
+                document.getElementById('box-game').classList.add('hidden');
+                bukaPuzzleAkhir(); return;
+            }
+
+            document.getElementById('box-game').classList.add('hidden');
+            document.getElementById('box-code-reveal').classList.remove('hidden');
+            document.getElementById('revealed-letter').innerText = data.kod;
+            document.getElementById('code-reveal-clue').innerText = data.petunjukKod;
+            document.getElementById('input-gate-code').value = "";
+            document.getElementById('decoder-error').classList.add('hidden');
+        };
+
+        window.sahkanKodGate = function() {
+            const input = document.getElementById('input-gate-code').value.trim().toUpperCase();
+            if (input === senaraiSoalan[indeksSekarang].kod.toUpperCase()) {
+                // Simpan kod ke dalam beg kutipan pemain jika betul
+                kodKutipanPemain.push(input);
+                document.getElementById('box-code-reveal').classList.add('hidden');
+                indeksSekarang++;
+                document.getElementById('box-game').classList.remove('hidden');
+                paparSoalan();
+            } else {
+                document.getElementById('decoder-error').classList.remove('hidden');
+            }
+        };
+
+        // PEMBARUAN UTAMA: Blok teka-teki disusun di akhir permainan untuk membina: TALAKFASAKH
+        function bukaPuzzleAkhir() {
+            document.getElementById('box-code-puzzle').classList.remove('hidden');
+            susunanPuzzlePemain = []; 
+            binaKolamHurufPuzzleAkhir(); 
+            kemasKiniPaparanSlotPuzzle();
+        }
+
+        function binaKolamHurufPuzzleAkhir() {
+            const pool = document.getElementById('puzzle-letter-pool'); 
+            pool.innerHTML = "";
+            
+            // Mengambil semua abjad sasaran secara tunggal dan merawakkannya
+            let randomPool = [...sasaranAbjadPool].sort(() => 0.5 - Math.random());
+            
+            randomPool.forEach((huruf, i) => {
+                let b = document.createElement('button');
+                b.className = "px-3.5 py-2.5 bg-stone-900 text-amber-500 font-black border border-stone-800 font-mono active:scale-95 transition-all text-xs";
+                b.innerText = huruf; 
+                b.id = `puzzle-pool-btn-${i}`;
+                b.onclick = () => { tapFX('click'); tambahHurufKePuzzle(huruf, i); };
+                pool.appendChild(b);
+            });
+        }
+
+        function tambahHurufKePuzzle(huruf, i) {
+            if (susunanPuzzlePemain.length >= sasaranAbjadPool.length) return;
+            susunanPuzzlePemain.push({ huruf: huruf, poolIndex: i });
+            document.getElementById('puzzle-pool-btn-' + i).disabled = true;
+            document.getElementById('puzzle-pool-btn-' + i).className = "px-3.5 py-2.5 bg-stone-950 text-stone-800 border-dashed border border-stone-900 opacity-30 font-mono text-xs";
+            kemasKiniPaparanSlotPuzzle();
+        }
+
+        window.padamSusunanPuzzle = function() { 
+            susunanPuzzlePemain = []; 
+            binaKolamHurufPuzzleAkhir(); 
+            kemasKiniPaparanSlotPuzzle(); 
+        };
+
+        function kemasKiniPaparanSlotPuzzle() {
+            const slots = document.getElementById('puzzle-slots'); 
+            slots.innerHTML = "";
+            if (susunanPuzzlePemain.length === 0) { 
+                slots.innerHTML = `<span class="text-[11px] text-stone-600 italic">Susun kepingan abjad menjadi kata kunci utama...</span>`; 
+                return; 
+            }
+            susunanPuzzlePemain.forEach(item => {
+                slots.innerHTML += `<span class="px-2.5 py-1.5 bg-black border border-amber-600 font-black text-amber-400 font-mono text-xs">${item.huruf}</span>`;
+            });
+        }
+
+        window.sahkanPuzzleAkhir = function() {
+            const perkataanDisusun = susunanPuzzlePemain.map(item => item.huruf).join("").toUpperCase();
+            if (perkataanDisusun === "TALAKFASAKH") {
+                document.getElementById('box-code-puzzle').classList.add('hidden');
+                document.getElementById('box-reflection').classList.remove('hidden');
+            } else {
+                document.getElementById('puzzle-error').classList.remove('hidden');
+            }
+        };
+
+        window.pilihBintangKefahaman = function(b) {
+            tapFX('click'); bintangTerpilih = b;
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById(`star-${i}`).className = i <= b ? "fas fa-star text-yellow-500 transition" : "far fa-star text-stone-600 transition";
+            }
+            document.getElementById('star-desc').innerText = ["⭐ Lemah", "⭐⭐ Kurang Faham", "⭐⭐ Asas Perundangan", "⭐⭐⭐⭐ Menguasai Fail", "⭐⭐⭐⭐• Pakar Rekod Syariah!"][b-1];
+            document.getElementById('btn-submit-rating').disabled = false;
+            document.getElementById('btn-submit-rating').className = "w-full py-4 bg-emerald-600 text-stone-950 font-black text-xs cursor-pointer uppercase shadow-md";
+        };
+
+        window.hantarPenilaianBintang = async function() {
+            tapFX('click');
+            await simpanSkorPemain(bintangTerpilih);
+            
+            const statusIndicator = document.getElementById('sheet-sending-status');
+            statusIndicator.classList.remove('hidden');
+            
+            const payload = {
+                nama: namaPemain, skor: skor, tarikh: new Date().toLocaleString('ms-MY'),
+                ref1: `Tahap: ${bintangTerpilih} Bintang`,
+                ref2: `Hujah Meja: ${dataJustifikasi}`, 
+                ref3: `Pengajaran Pejabat: ${dataAmalan[0]}`
+            };
+
+            try {
+                await fetch(defaultApiUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            } catch (e) { console.error(e); }
+            finally { statusIndicator.classList.add('hidden'); document.getElementById('box-reflection').classList.add('hidden'); tamatGame(true); }
+        };
+
+        function tamatGame(berjaya) {
+            document.getElementById('box-end').classList.remove('hidden');
+            document.getElementById('end-score').innerText = skor;
+            const msg = document.getElementById('end-msg');
+            
+            if (berjaya) {
+                tapFX('win');
+                msg.innerHTML = `<strong>Laporan Laci Arkib Dinamik:</strong> Siasatan selesai. Semua dokumen permohonan **Talak** dan tuntutan **Fasakh** berjaya dianalisis keabsahannya walaupun fail disusun secara rawak. Gabungan susunan kod **TALAKFASAKH** berjaya dikunci dengan sempurna. Syabas detektif!`;
+                document.getElementById('end-evaluation').innerText = skor >= 180 ? "Penyiasat Elit Syariah" : "Penyiasat Gred A";
+                document.getElementById('display-text-evidence').innerHTML = `<p class="text-amber-500 font-bold mb-1">Nota Justifikasi Undang-Undang:</p><p class="italic text-stone-400">"${dataJustifikasi}"</p>`;
+            } else {
+                msg.innerText = "Siasatan gagal. Kegagalan memahami impak pengurusan kes syarak menyebabkan integriti fail ditolak.";
+                document.getElementById('end-evaluation').innerText = "Gagal Mengarkib Kes";
+            }
+            paparLeaderboard();
+        }
+
+        async function simpanSkorPemain(b = 0) {
+            const r = { nama: namaPemain, skor: skor, tarikh: new Date().toLocaleString('ms-MY'), refleksi: { q1: `${b} Bintang`, q2: dataJustifikasi, q3: dataAmalan[0] } };
+            let s = dapatkanSkorSelamat(); s.push(r); setSkorSelamat(s);
+            try {
+                if (window.auth?.currentUser) {
+                    const id = namaPemain.toLowerCase().replace(/[^a-z0-9]/g, "-");
+                    await window.setDoc(window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'leaderboard', id), r);
+                }
+            } catch(e){}
+        }
+
+        function paparLeaderboard() {
+            const c1 = document.getElementById('leaderboard-list'); const c2 = document.getElementById('leaderboard-list-end');
+            if (c1) c1.innerHTML = ""; if (c2) c2.innerHTML = "";
+            let list = dapatkanSkorSelamat().sort((a,b)=>b.skor-a.skor);
+            list.slice(0, 10).forEach((r, i) => {
+                const row = `<div class="flex justify-between bg-black/50 border border-stone-900 p-2 font-mono text-stone-400"><span>${i+1}. ${r.nama}</span><b class="text-emerald-400">${r.skor} Pts</b></div>`;
+                if(c1) c1.innerHTML += row; if(c2) c2.innerHTML += row;
+            });
+        }
+
+        window.mainSemula = function() { 
+            document.getElementById('box-end').classList.add('hidden'); 
+            document.getElementById('box-login').classList.remove('hidden'); 
+            bintangTerpilih = 0; 
+            document.getElementById('btn-submit-rating').disabled = true; 
+            document.getElementById('btn-submit-rating').className = "w-full py-4 bg-stone-800 text-stone-500 font-black text-xs cursor-not-allowed uppercase"; 
+            for(let i=1;i<=5;i++) document.getElementById(`star-${i}`).className="far fa-star text-stone-600"; 
+            document.getElementById('star-desc').innerText="Sila pilih bintang..."; 
+        };
+
+        window.mintaPengesahanPadam = function() { 
+            tampilkanModal("Kosongkan Log Arkib", "Adakah anda pasti mahu memadam semua rekod tempatan peranti?", "❓", true, ()=>{ localStorage.removeItem('senaraiSkorSyariahRawak'); paparLeaderboard(); }); 
+        };
+
+        window.muatTurunRekodCSV = function() {
+            let s = dapatkanSkorSelamat();
+            if(s.length === 0) { tampilkanModal("Data Kosong", "Tiada rekod fail untuk dieksport.", "❌"); return; }
+            let csv = "Nama,Skor,Tarikh,Refleksi Bintang,Hujah Analisis,Rumusan Pengajaran\n";
+            s.forEach(r => {
+                let q1 = r.refleksi?.q1 || "-";
+                let q2 = (r.refleksi?.q2 || "-").replace(/"/g, '""');
+                let q3 = (r.refleksi?.q3 || "-").replace(/"/g, '""');
+                csv += `"${r.nama}",${r.skor},"${r.tarikh}","${q1}","${q2}","${q3}"\n`;
+            });
+            
+            if(/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                document.getElementById('ios-csv-text').value = csv;
+                document.getElementById('box-ios-fallback').classList.remove('hidden');
+            } else {
+                let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                let link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.setAttribute("download", `Laporan_Rawak_Syariah_${namaPemain || 'Rekod'}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        };
+
+        window.tutupIosFallback = function() { document.getElementById('box-ios-fallback').classList.add('hidden'); };
+        
+        paparLeaderboard();
+    </script>
+</body>
+</html>
